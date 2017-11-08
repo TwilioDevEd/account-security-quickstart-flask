@@ -48,6 +48,7 @@ def logout():
 def index():
     return flask.redirect('/login')
 
+
 login_manager.unauthorized_handler(index)
 
 

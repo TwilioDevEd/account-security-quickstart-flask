@@ -4,7 +4,10 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from . import app
 
-engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'], convert_unicode=True)
+engine = create_engine(
+    app.config['SQLALCHEMY_DATABASE_URI'],
+    convert_unicode=True
+)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
@@ -13,7 +16,7 @@ Base.query = db_session.query_property()
 
 
 def init_db():
-    from .models import User
+    from .models import User  # noqa: F401
     Base.metadata.create_all(bind=engine)
 
 

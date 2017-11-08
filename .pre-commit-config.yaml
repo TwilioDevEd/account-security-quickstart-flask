@@ -12,3 +12,7 @@
     -   id: debug-statements
     -   id: requirements-txt-fixer
     -   id: flake8
+        exclude: >
+            (?x)^(
+                twofa/config.py
+            )$

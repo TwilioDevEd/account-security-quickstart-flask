@@ -3,7 +3,6 @@ import twofa
 import unittest
 import tempfile
 
-from flask_login import encode_cookie
 from twofa.database import db_session
 from twofa.models import User
 

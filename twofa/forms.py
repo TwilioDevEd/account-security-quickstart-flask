@@ -33,7 +33,8 @@ class RegistrationForm(FlaskForm):
     username = StringField('username', validators=[DataRequired()])
     email = EmailField('email', validators=[DataRequired()])
     password = PasswordField('password', validators=[DataRequired()])
-    confirm_password = PasswordField('confirm_password', validators=[DataRequired()])
+    confirm_password = PasswordField('confirm_password',
+                                     validators=[DataRequired()])
     country_code = StringField('country_code', validators=[DataRequired()])
     phone_number = StringField('phone_number', validators=[DataRequired()])
 
@@ -49,7 +50,7 @@ class RegistrationForm(FlaskForm):
         if not super(RegistrationForm, self).validate():
             return False
         if self.password.data != self.confirm_password.data:
-            self.errors['non_field'] = 'Password and confirmation did not match'
+            self.errors['non_field'] = "Password and confirmation didn't match"
             return False
 
         phone_number = self.country_code.data + self.phone_number.data
@@ -73,7 +74,10 @@ class TokenVerificationForm(FlaskForm):
 
     def validate_token(self, field):
         try:
-            verification = authy_api.tokens.verify(self.authy_id, self.token.data)
+            verification = authy_api.tokens.verify(
+                self.authy_id,
+                self.token.data
+            )
             if not verification.ok():
                 self.token.errors.append('Invalid Token')
                 return False
