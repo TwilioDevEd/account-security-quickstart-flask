@@ -12,7 +12,7 @@ from . import app
 from .models import User
 
 
-authy_api = AuthyApiClient(app.config['ACCOUNT_SECURITY_API_KEY'])
+authy_api = AuthyApiClient(app.config.get('ACCOUNT_SECURITY_API_KEY'))
 
 
 class LoginForm(FlaskForm):

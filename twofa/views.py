@@ -10,7 +10,7 @@ from .forms import LoginForm, RegistrationForm, TokenVerificationForm
 from .models import User
 
 
-authy_api = AuthyApiClient(app.config['ACCOUNT_SECURITY_API_KEY'])
+authy_api = AuthyApiClient(app.config.get('ACCOUNT_SECURITY_API_KEY'))
 
 
 @app.route('/protected')
