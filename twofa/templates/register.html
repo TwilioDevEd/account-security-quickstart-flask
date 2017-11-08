@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block container %}
+<div class="row centered-form">
+  <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Quickstart Registration</h3>
+      </div>
+      <div class="panel-body">
+        <form method="POST" role="form">
+          
+            {{ form.csrf_token }}
+
+            {% if form.errors %}
+            <ul>
+              {% for error in form.errors.values() %}
+              <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12">
+                <div class="form-group">
+                  <input type="text" name="username" maxlength="254" required="" id="id_username"
+                    class="form-control input-sm" placeholder="User Name">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12">
+                <div class="form-group">
+                  <input type="text" name="email" maxlength="254" required="" id="id_email"
+                    class="form-control input-sm" placeholder="Email">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-6 col-sm-6 col-md-6">
+                <div class="form-group">
+                  <input type="text" name="country_code" required="" id="id_country_code"
+                    class="form-control input-sm" placeholder="Country Code">
+                </div>
+              </div>
+              <div class="col-xs-6 col-sm-6 col-md-6">
+                <div class="form-group">
+                  <input type="text" name="phone_number" required="" id="id_phone_number"
+                    class="form-control input-sm" placeholder="Phone Number">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-6 col-sm-6 col-md-6">
+                <div class="form-group"><input type="password" name="password" class="form-control input-sm" placeholder="Password" maxlength="128" required="" id="id_password"></div>
+              </div>
+              <div class="col-xs-6 col-sm-6 col-md-6">
+                <div class="form-group"><input type="password" name="confirm_password" class="form-control input-sm" placeholder="Confirm Password" required="" id="id_confirm_password"></div>
+              </div>
+            </div>
+
+            <input type="submit" value="Register" class="btn btn-info btn-block">
+            <small style="float: right;"><a href="/login">Login</a></small>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
