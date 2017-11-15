@@ -3,7 +3,7 @@ import phonenumbers
 from authy import AuthyFormatException
 from authy.api import AuthyApiClient
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, SelectField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, ValidationError
 from phonenumbers.phonenumberutil import NumberParseException
@@ -85,3 +85,36 @@ class TokenVerificationForm(FlaskForm):
             self.token.errors.append(str(e))
             return False
         return True
+
+
+######################
+# Phone Verification #
+######################
+
+class PhoneVerificationForm(FlaskForm):
+    country_code = StringField('country_code', validators=[DataRequired()])
+    phone_number = StringField('phone_number', validators=[DataRequired()])
+    via = SelectField('via', choices=[('sms', 'SMS'), ('call', 'Call')])
+
+    def validate_country_code(self, field):
+        if not field.data.startswith('+'):
+            field.data = '+' + field.data
+
+    def validate(self):
+        if not super(PhoneVerificationForm, self).validate():
+            return False
+
+        phone_number = self.country_code.data + self.phone_number.data
+        try:
+            phone_number = phonenumbers.parse(phone_number, None)
+            if not phonenumbers.is_valid_number(phone_number):
+                self.phone_number.errors.append('Invalid phone number')
+                return False
+        except NumberParseException as e:
+            self.phone_number.errors.append(str(e))
+            return False
+        return True
+
+
+class TokenPhoneValidationForm(FlaskForm):
+    token = StringField('token', validators=[DataRequired()])

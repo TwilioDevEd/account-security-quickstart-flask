@@ -6,7 +6,13 @@ from flask_login import login_required, login_user, logout_user, current_user
 from . import app, login_manager
 from .database import db_session
 from .decorators import twofa_required
-from .forms import LoginForm, RegistrationForm, TokenVerificationForm
+from .forms import (
+    LoginForm,
+    RegistrationForm,
+    TokenVerificationForm,
+    PhoneVerificationForm,
+    TokenPhoneValidationForm,
+)
 from .models import User
 
 
@@ -40,6 +46,7 @@ def logout():
     db_session.add(current_user)
     db_session.commit()
     flask.session['authy'] = False
+    flask.session['is_verified'] = False
     logout_user()
     return flask.redirect('/login')
 
@@ -154,3 +161,48 @@ def onetouch_status():
         )
     else:
         return flask.Response(approval_status.errros(), status=503)
+
+
+######################
+# Phone Verification #
+######################
+
+@app.route('/verification', methods=['GET', 'POST'])
+def phone_verification():
+    form = PhoneVerificationForm()
+    if form.validate_on_submit():
+        flask.session['phone_number'] = form.phone_number.data
+        flask.session['country_code'] = form.country_code.data
+        authy_api.phones.verification_start(
+            form.phone_number.data,
+            form.country_code.data,
+            via=form.via.data
+        )
+        return flask.redirect('/verification/token')
+    return flask.render_template('phone_verification.html', form=form)
+
+
+@app.route('/verification/token', methods=['GET', 'POST'])
+def token_validation():
+    form = TokenPhoneValidationForm()
+    if form.validate_on_submit():
+        verification = authy_api.phones.verification_check(
+            flask.session['phone_number'],
+            flask.session['country_code'],
+            form.token.data
+        )
+        if verification.ok():
+            flask.session['is_verified'] = True
+            return flask.redirect('/verified')
+        else:
+            form.errors['non_field'] = []
+            for error_msg in verification.errors().values():
+                form.errors['non_field'].append(error_msg)
+    return flask.render_template('token_validation.html', form=form)
+
+
+@app.route('/verified')
+def verified():
+    if not flask.session.get('is_verified'):
+        return flask.redirect('/verification')
+    return flask.render_template('verified.html')
