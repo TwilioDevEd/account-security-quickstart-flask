@@ -16,10 +16,10 @@
     "default": {
         "authy": {
             "hashes": [
-                "sha256:e87be033bc5523f4580300e7267b07ec1c62dab027b575b6e24955df781fe7a3"
+                "sha256:fffbef760dc5a4ad0748480159773f2ea574957fe7440f2139cfe0048ceaa7bd"
             ],
             "index": "pypi",
-            "version": "==2.1.5"
+            "version": "==2.2.3"
         },
         "certifi": {
             "hashes": [
