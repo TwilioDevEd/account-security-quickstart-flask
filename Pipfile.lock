@@ -137,11 +137,11 @@
         },
         "phonenumbers": {
             "hashes": [
-                "sha256:7954665519f7374edf80be0b263610f776dfb55fb7c9d809c16264279593ed5b",
-                "sha256:adb2dd985f875ac035bbdc6a1cc57e30834e106e2ff7899e09a1690b474c1774"
+                "sha256:8bec42262dd13772912588dabe23666de1bfbb5a9eb73aa6d278d990d2f7d3b1",
+                "sha256:c05c33785fbc20cb52e2f0c2ef57e01e56b9f3ab9d510a963abcee719a5348ff"
             ],
             "index": "pypi",
-            "version": "==8.8.5"
+            "version": "==8.10.16"
         },
         "requests": {
             "hashes": [
