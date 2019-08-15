@@ -52,10 +52,10 @@
         },
         "flask-dotenv": {
             "hashes": [
-                "sha256:0376631c2ba8db5b1dd65b14bbc5c83b867297749def34dccbfb63b7f35dbb7b"
+                "sha256:8ef7d21877fdebdb46276da07ccb9a55b45fa657e476b0c7b7f5f1fa071057f6"
             ],
             "index": "pypi",
-            "version": "==0.1.1"
+            "version": "==0.1.2"
         },
         "flask-login": {
             "hashes": [
@@ -176,9 +176,9 @@
         },
         "sqlalchemy": {
             "hashes": [
-                "sha256:217e7fc52199a05851eee9b6a0883190743c4fb9c8ac4313ccfceaffd852b0ff"
+                "sha256:0459bf0ea6478f3e904de074d65769a11d74cdc34438ab3159250c96d089aef0"
             ],
-            "version": "==1.3.6"
+            "version": "==1.3.7"
         },
         "urllib3": {
             "hashes": [
