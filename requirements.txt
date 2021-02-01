@@ -1,4 +1,4 @@
-alembic==0.9.6
+alembic==1.5.3
 authy==2.1.5
 Flask-DotEnv==0.1.1
 Flask-Login==0.4.0
