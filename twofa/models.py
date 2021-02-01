@@ -1,16 +1,15 @@
-from sqlalchemy import Column, String, Boolean
-from .database import Base
+from .database import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class User(Base):
+class User(db.Model):
     __tablename__ = 'users'
 
-    username = Column(String(50), unique=True, primary_key=True)
-    email = Column(String(120))
-    authy_id = Column(String(12))
-    pw_hash = Column(String(50))
-    is_authenticated = Column(Boolean(), default=False)
+    username = db.Column(db.String(50), unique=True, primary_key=True)
+    email = db.Column(db.String(120))
+    authy_id = db.Column(db.String(12))
+    pw_hash = db.Column(db.String(50))
+    is_authenticated = db.Column(db.Boolean, default=False)
 
     def __init__(self, username=None, email=None, password=None,
                  authy_id=None, is_authenticated=False):
@@ -38,6 +37,6 @@ class User(Base):
     def is_anonymous(self):
         return False
 
-    @classmethod
-    def load_user(cls, user_id):
-        return cls.query.get(user_id)
+    @staticmethod
+    def load_user(user_id):
+        return User.query.get(user_id)

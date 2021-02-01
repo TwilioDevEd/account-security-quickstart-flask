@@ -3,8 +3,8 @@ import flask
 from authy.api import AuthyApiClient
 from flask_login import login_required, login_user, logout_user, current_user
 
-from . import app, login_manager
-from .database import db_session
+from . import app, login_manager, db
+# from .database import db_session
 from .decorators import twofa_required
 from .forms import (
     LoginForm,
@@ -32,8 +32,8 @@ def login():
     if form.validate_on_submit():
         login_user(form.user, remember=True)
         form.user.is_authenticated = True
-        db_session.add(form.user)
-        db_session.commit()
+        db.session.add(form.user)
+        db.session.commit()
         next = flask.request.args.get('next')
         return flask.redirect(next or flask.url_for('protected'))
     return flask.render_template('login.html', form=form)
@@ -43,8 +43,8 @@ def login():
 @login_required
 def logout():
     current_user.is_authenticated = False
-    db_session.add(current_user)
-    db_session.commit()
+    db.session.add(current_user)
+    db.session.commit()
     flask.session['authy'] = False
     flask.session['is_verified'] = False
     logout_user()
@@ -77,13 +77,13 @@ def register():
                 is_authenticated=True
             )
             user.authy_id = authy_user.id
-            db_session.add(user)
-            db_session.commit()
+            db.session.add(user)
+            db.session.commit()
             login_user(user, remember=True)
             return flask.redirect('/protected')
         else:
             form.errors['non_field'] = []
-            for key, value in authy_user.errors():
+            for key, value in authy_user.errors().items():
                 form.errors['non_field'].append(
                     '{key}: {value}'.format(key=key, value=value)
                 )

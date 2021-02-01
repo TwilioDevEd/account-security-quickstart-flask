@@ -1,0 +1,12 @@
+alembic
+authy
+Flask-Login
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-WTF
+phonenumbers
+python-dotenv
+
+
+flake8
+black

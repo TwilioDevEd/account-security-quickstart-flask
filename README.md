@@ -4,7 +4,7 @@
 
 # Twilio Account Security Quickstart - Two-Factor Authentication and Phone Verification
 
-[![Build Status](https://travis-ci.org/TwilioDevEd/account-security-quickstart-flask.svg?branch=master)](https://travis-ci.org/TwilioDevEd/account-security-quickstart-flask)
+[![Build Status](https://github.com/TwilioDevEd/account-security-quickstart-flask/workflows/Flask/badge.svg)](https://github.com/TwilioDevEd/account-security-quickstart-flask/actions?query=workflow%3AFlask)
 
 A simple Python and Flask implementation of a website that uses Twilio Account Security services to protect all assets within a folder. Additionally, it shows a Phone Verification implementation.
 
@@ -21,13 +21,51 @@ It uses four channels for delivery, SMS, Voice, Soft Tokens, and Push Notificati
 - SMS or Voice Call
 
 ### Setup
-- Clone this repo
-- Run `pipenv install` or `pip -r requirements.txt`
-- Register for a [Twilio Account](https://www.twilio.com/).
-- Setup an Account Security app via the [Twilio Console](https://twilio.com/console).
-- Grab an Application API key from the Dashboard and paste it in `.env.example`
-- Save the `.env.example` file as `.env`
-- Run `python run.py` from the cloned repo to run the app
+This project is built using the [Flask](http://flask.pocoo.org/) web framework. It runs on Python 2.7+ and Python 3.4+.
 
-### License
-- MIT
+1. To run the app locally, first clone this repository and `cd` into it.
+
+1. Create and activate a new python3 virtual environment.
+
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+1. Install the requirements using pip.
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+1. Copy the `.env.example` file to `.env`, and edit it to add your Application API Key.
+   Can get/create one [here](https://www.twilio.com/console/authy/applications).
+
+   ```
+   ACCOUNT_SECURITY_API_KEY=<your API key>
+   ```
+
+1. Create Flask application variables for development
+   
+   ```bash
+   export FLASK_APP=twofa 
+   export FLASK_ENV=development
+   ```
+
+1. Run the migrations.
+
+   ```bash
+   flask db upgrade
+   ```
+
+1. Start the development server.
+
+    ```bash
+    flask run
+    ```
+
+## Meta
+
+* No warranty expressed or implied. Software is as is. Diggity.
+* [MIT License](LICENSE)
+* Lovingly crafted by Twilio Developer Education.
