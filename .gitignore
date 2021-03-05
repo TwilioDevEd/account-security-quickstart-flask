@@ -48,4 +48,4 @@ coverage.xml
 
 # Flask stuff:
 *.log
-db.sqlite3
+**/*.sqlite

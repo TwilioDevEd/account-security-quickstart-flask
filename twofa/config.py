@@ -1,10 +1,32 @@
-from os import path
+import os
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-class Config(object):
-    APP_DIR = path.dirname(path.abspath(__file__))
-    BASE_DIR = path.dirname(APP_DIR)
-    DEBUG = True
-    SECRET_KEY = '1a45ac651d8a1b42bd8c43dbe4e0a2f696374ce5ab50ec7d'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///{base_dir}/db.sqlite3'.format(base_dir=BASE_DIR)
+class DefaultConfig(object):
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'secret-key')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
+    ACCOUNT_SECURITY_API_KEY = os.environ.get('ACCOUNT_SECURITY_API_KEY')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    DEBUG = False
+
+
+class DevelopmentConfig(DefaultConfig):
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'dev.sqlite')
+
+
+class TestConfig(DefaultConfig):
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    PRESERVE_CONTEXT_ON_EXCEPTION = False
+    WTF_CSRF_ENABLED = False
+    DEBUG = True
+    TESTING = True
+    SERVER_NAME = 'server.test'
+
+
+config_classes = {
+    'testing': TestConfig,
+    'development': DevelopmentConfig,
+    'production': DefaultConfig,
+}
