@@ -49,3 +49,6 @@ coverage.xml
 # Flask stuff:
 *.log
 db.sqlite3
+
+Pipfile
+Pipfile.lock
