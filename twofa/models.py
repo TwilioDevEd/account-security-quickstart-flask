@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     username = Column(String(50), unique=True, primary_key=True)
     email = Column(String(120))
@@ -12,8 +12,14 @@ class User(Base):
     pw_hash = Column(String(50))
     is_authenticated = Column(Boolean(), default=False)
 
-    def __init__(self, username=None, email=None, password=None,
-                 authy_id=None, is_authenticated=False):
+    def __init__(
+        self,
+        username=None,
+        email=None,
+        password=None,
+        authy_id=None,
+        is_authenticated=False,
+    ):
         self.username = username
         self.email = email
         self.authy_id = authy_id
@@ -21,7 +27,7 @@ class User(Base):
         self.set_password(password)
 
     def __repr__(self):
-        return '<User %r>' % (self.username)
+        return "<User %r>" % (self.username)
 
     def set_password(self, password):
         self.pw_hash = generate_password_hash(password)

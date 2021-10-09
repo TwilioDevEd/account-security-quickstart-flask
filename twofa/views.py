@@ -16,17 +16,17 @@ from .forms import (
 from .models import User
 
 
-authy_api = AuthyApiClient(app.config.get('ACCOUNT_SECURITY_API_KEY'))
+authy_api = AuthyApiClient(app.config.get("ACCOUNT_SECURITY_API_KEY"))
 
 
-@app.route('/protected')
+@app.route("/protected")
 @login_required
 @twofa_required
 def protected():
-    return flask.render_template('protected.html')
+    return flask.render_template("protected.html")
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -34,9 +34,9 @@ def login():
         form.user.is_authenticated = True
         db_session.add(form.user)
         db_session.commit()
-        next = flask.request.args.get('next')
-        return flask.redirect(next or flask.url_for('protected'))
-    return flask.render_template('login.html', form=form)
+        next = flask.request.args.get("next")
+        return flask.redirect(next or flask.url_for("protected"))
+    return flask.render_template("login.html", form=form)
 
 
 @app.route("/logout", methods=["GET"])
@@ -45,21 +45,21 @@ def logout():
     current_user.is_authenticated = False
     db_session.add(current_user)
     db_session.commit()
-    flask.session['authy'] = False
-    flask.session['is_verified'] = False
+    flask.session["authy"] = False
+    flask.session["is_verified"] = False
     logout_user()
-    return flask.redirect('/login')
+    return flask.redirect("/login")
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return flask.redirect('/login')
+    return flask.redirect("/login")
 
 
 login_manager.unauthorized_handler(index)
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -74,91 +74,84 @@ def register():
                 form.email.data,
                 form.password.data,
                 authy_user.id,
-                is_authenticated=True
+                is_authenticated=True,
             )
             user.authy_id = authy_user.id
             db_session.add(user)
             db_session.commit()
             login_user(user, remember=True)
-            return flask.redirect('/protected')
+            return flask.redirect("/protected")
         else:
-            form.errors['non_field'] = []
+            form.errors["non_field"] = []
             for key, value in authy_user.errors():
-                form.errors['non_field'].append(
-                    '{key}: {value}'.format(key=key, value=value)
-                )
-    return flask.render_template('register.html', form=form)
+                form.errors["non_field"].append(f"{key}: {value}")
+    return flask.render_template("register.html", form=form)
 
 
-@app.route('/2fa', methods=['GET', 'POST'])
+@app.route("/2fa", methods=["GET", "POST"])
 @login_required
 def twofa():
     form = TokenVerificationForm(current_user.authy_id)
     if form.validate_on_submit():
-        flask.session['authy'] = True
-        return flask.redirect('/protected')
-    return flask.render_template('2fa.html', form=form)
+        flask.session["authy"] = True
+        return flask.redirect("/protected")
+    return flask.render_template("2fa.html", form=form)
 
 
-@app.route('/token/sms', methods=['POST'])
+@app.route("/token/sms", methods=["POST"])
 @login_required
 def token_sms():
-    sms = authy_api.users.request_sms(current_user.authy_id, {'force': True})
+    sms = authy_api.users.request_sms(current_user.authy_id, {"force": True})
     if sms.ok():
-        return flask.Response('SMS request successful', status=200)
+        return flask.Response("SMS request successful", status=200)
     else:
-        return flask.Response('SMS request failed', status=503)
+        return flask.Response("SMS request failed", status=503)
 
 
-@app.route('/token/voice', methods=['POST'])
+@app.route("/token/voice", methods=["POST"])
 @login_required
 def token_voice():
-    call = authy_api.users.request_call(current_user.authy_id, {'force': True})
+    call = authy_api.users.request_call(current_user.authy_id, {"force": True})
     if call.ok():
-        return flask.Response('Call request successful', status=200)
+        return flask.Response("Call request successful", status=200)
     else:
-        return flask.Response('Call request failed', status=503)
+        return flask.Response("Call request failed", status=503)
 
 
-@app.route('/token/onetouch', methods=['POST'])
+@app.route("/token/onetouch", methods=["POST"])
 @login_required
 def token_onetouch():
     details = {
-        'Authy ID': current_user.authy_id,
-        'Username': current_user.username,
-        'Reason': 'Demo by Account Security'
+        "Authy ID": current_user.authy_id,
+        "Username": current_user.username,
+        "Reason": "Demo by Account Security",
     }
 
-    hidden_details = {
-        'test': 'This is a'
-    }
+    hidden_details = {"test": "This is a"}
 
     response = authy_api.one_touch.send_request(
         int(current_user.authy_id),
-        message='Login requested for Account Security account.',
+        message="Login requested for Account Security account.",
         seconds_to_expire=120,
         details=details,
-        hidden_details=hidden_details
+        hidden_details=hidden_details,
     )
     if response.ok():
-        flask.session['onetouch_uuid'] = response.get_uuid()
-        return flask.Response('OneTouch request successfull', status=200)
+        flask.session["onetouch_uuid"] = response.get_uuid()
+        return flask.Response("OneTouch request successfull", status=200)
     else:
-        return flask.Response('OneTouch request failed', status=503)
+        return flask.Response("OneTouch request failed", status=503)
 
 
-@app.route('/onetouch-status', methods=['POST'])
+@app.route("/onetouch-status", methods=["POST"])
 @login_required
 def onetouch_status():
-    uuid = flask.session['onetouch_uuid']
+    uuid = flask.session["onetouch_uuid"]
     approval_status = authy_api.one_touch.get_approval_status(uuid)
     if approval_status.ok():
-        if approval_status['approval_request']['status'] == 'approved':
-            flask.session['authy'] = True
-        return flask.Response(
-            approval_status['approval_request']['status'],
-            status=200
-        )
+        if approval_status["approval_request"]["status"] == "approved":
+            flask.session["authy"] = True
+        return flask.Response(approval_status["approval_request"]["status"], status=200)
     else:
         return flask.Response(approval_status.errros(), status=503)
 
@@ -167,42 +160,41 @@ def onetouch_status():
 # Phone Verification #
 ######################
 
-@app.route('/verification', methods=['GET', 'POST'])
+
+@app.route("/verification", methods=["GET", "POST"])
 def phone_verification():
     form = PhoneVerificationForm()
     if form.validate_on_submit():
-        flask.session['phone_number'] = form.phone_number.data
-        flask.session['country_code'] = form.country_code.data
+        flask.session["phone_number"] = form.phone_number.data
+        flask.session["country_code"] = form.country_code.data
         authy_api.phones.verification_start(
-            form.phone_number.data,
-            form.country_code.data,
-            via=form.via.data
+            form.phone_number.data, form.country_code.data, via=form.via.data
         )
-        return flask.redirect('/verification/token')
-    return flask.render_template('phone_verification.html', form=form)
+        return flask.redirect("/verification/token")
+    return flask.render_template("phone_verification.html", form=form)
 
 
-@app.route('/verification/token', methods=['GET', 'POST'])
+@app.route("/verification/token", methods=["GET", "POST"])
 def token_validation():
     form = TokenPhoneValidationForm()
     if form.validate_on_submit():
         verification = authy_api.phones.verification_check(
-            flask.session['phone_number'],
-            flask.session['country_code'],
-            form.token.data
+            flask.session["phone_number"],
+            flask.session["country_code"],
+            form.token.data,
         )
         if verification.ok():
-            flask.session['is_verified'] = True
-            return flask.redirect('/verified')
+            flask.session["is_verified"] = True
+            return flask.redirect("/verified")
         else:
-            form.errors['non_field'] = []
+            form.errors["non_field"] = []
             for error_msg in verification.errors().values():
-                form.errors['non_field'].append(error_msg)
-    return flask.render_template('token_validation.html', form=form)
+                form.errors["non_field"].append(error_msg)
+    return flask.render_template("token_validation.html", form=form)
 
 
-@app.route('/verified')
+@app.route("/verified")
 def verified():
-    if not flask.session.get('is_verified'):
-        return flask.redirect('/verification')
-    return flask.render_template('verified.html')
+    if not flask.session.get("is_verified"):
+        return flask.redirect("/verification")
+    return flask.render_template("verified.html")
